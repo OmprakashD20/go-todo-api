@@ -8,8 +8,10 @@ import (
 )
 
 type EnvConfig struct {
-	Port string
-	DB   DBConfig
+	Port           string
+	DB             DBConfig
+	PasswordPepper string
+	JWTSecret      string
 }
 
 type DBConfig struct {
@@ -38,6 +40,8 @@ func initConfig() EnvConfig {
 			DBName:     *getEnv("DB_NAME"),
 			SSLMode:    *getEnv("DB_SSLMODE"),
 		},
+		PasswordPepper: *getEnv("PASSWORD_PEPPER"),
+		JWTSecret:      *getEnv("JWT_SECRET"),
 	}
 }
 

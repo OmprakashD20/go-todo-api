@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/OmprakashD20/go-todo-api/services/user"
+
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -21,10 +23,11 @@ func (s *APIServer) Run() error {
 	app := fiber.New()
 	api := app.Group("/api/v1")
 
-	userService := user.NewService()
-	userService.SetupUserRoutes(api)
+	userStore := user.NewStore(s.db)
+	userService := user.NewService(userStore)
+	userService.SetupUserRoutes(api.Group("/user"))
 
 	log.Printf("Server is running on %s", s.addr)
 
-	return app.Listen(s.addr)
+	return app.Listen(fmt.Sprintf(":%s", s.addr))
 }
