@@ -20,3 +20,6 @@ go.work.sum
 
 # env file
 .env
+
+# Exclude build folder used by Air
+build/
