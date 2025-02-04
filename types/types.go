@@ -6,7 +6,7 @@ import (
 
 // Store
 type UserStore interface {
-	CreateUser(*models.User) error
+	CreateUser(user *models.User) error
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserById(id uint) (*models.User, error)
 }
