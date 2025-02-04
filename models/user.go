@@ -13,6 +13,7 @@ type User struct {
 	Email          string    `json:"email" gorm:"unique;not null"`
 	HashedPassword string    `json:"hashedPassword" gorm:"not null"`
 	PasswordSalt   string    `json:"passwordSalt" gorm:"not null"`
+	Todos          []Todo    `json:"todos" gorm:"constraint:OnDelete:CASCADE"`
 	CreatedAt      time.Time `json:"createdAt"`
 	UpdatedAt      time.Time `json:"updatedAt"`
 }

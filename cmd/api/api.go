@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/OmprakashD20/go-todo-api/services/todo"
 	"github.com/OmprakashD20/go-todo-api/services/user"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,6 +27,10 @@ func (s *APIServer) Run() error {
 	userStore := user.NewStore(s.db)
 	userService := user.NewService(userStore)
 	userService.SetupUserRoutes(api.Group("/user"))
+
+	todoStore := todo.NewStore(s.db)
+	todoService := todo.NewService(todoStore, userStore)
+	todoService.SetupTodoRoutes(api.Group("/todo"))
 
 	log.Printf("Server is running on %s", s.addr)
 

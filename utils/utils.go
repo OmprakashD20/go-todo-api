@@ -22,7 +22,27 @@ func MapToArray(input map[string][]string) [][]string {
 	return result
 }
 
-func StructToMap(data interface{}) (map[string]interface{}, error) {
+func MapToStruct[T any](data map[string]interface{}) T {
+	var result T
+	v := reflect.ValueOf(&result).Elem()
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		fieldType := v.Type().Field(i)
+
+		if val, exists := data[fieldType.Name]; exists && field.CanSet() {
+			valRef := reflect.ValueOf(val)
+
+			if valRef.Type().ConvertibleTo(field.Type()) {
+				field.Set(valRef.Convert(field.Type()))
+			}
+		}
+	}
+
+	return result
+}
+
+func StructToMap(data interface{}) map[string]interface{} {
 	v := reflect.ValueOf(data)
 
 	result := make(map[string]interface{})
@@ -35,7 +55,7 @@ func StructToMap(data interface{}) (map[string]interface{}, error) {
 		}
 	}
 
-	return result, nil
+	return result
 }
 
 func Pick[T any](input T, pickFields ...string) map[string]interface{} {

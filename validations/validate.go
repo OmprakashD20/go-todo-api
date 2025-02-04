@@ -18,10 +18,7 @@ func ValidateSchema[T any](schema z.StructSchema) fiber.Handler {
 		}
 
 		// Convert the struct to map since Zog parses only map[string]interface{}
-		result, err := utils.StructToMap(body)
-		if err != nil {
-			return utils.SendErrorResponse(ctx, fiber.StatusInternalServerError, "Internal Server Error")
-		}
+		result := utils.StructToMap(body)
 
 		// Validate request body
 		if errs := schema.Parse(result, data); errs != nil {
