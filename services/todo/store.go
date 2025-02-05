@@ -15,7 +15,7 @@ func NewStore(db *gorm.DB) *Store {
 }
 
 func (s *Store) CreateTodo(todo *models.Todo) error {
-	err := s.db.Create(todo).Error
+	err := s.db.Table("todos").Create(todo).Error
 
 	return err
 }
