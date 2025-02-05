@@ -37,6 +37,9 @@ func VerifyToken(store types.UserStore) fiber.Handler {
 		if err != nil {
 			return utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Internal Server Error")
 		}
+		if user == nil {
+			return utils.SendErrorResponse(ctx, http.StatusUnauthorized, "You are not authorized")
+		} 
 
 		ctx.Locals("user", utils.Omit(*user, "HashedPassword", "PasswordSalt", "CreatedAt", "UpdatedAt"))
 

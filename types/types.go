@@ -15,8 +15,8 @@ type UserStore interface {
 
 type TodoStore interface {
 	CreateTodo(todo *models.Todo) error
-	//GetTodoById(id uint) (*models.Todo, error)
-	//GetTodosByUserId(userId uint) ([]*models.Todo, error)
+	GetTodoById(id uint) (*models.Todo, error)
+	GetTodosByUserId(userId uint) ([]*models.Todo, error)
 	//UpdateTodoById(id uint, data *models.Todo) error
 	//DeleteTodoById(id uint) error // Implement Batch Delete Option
 }

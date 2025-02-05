@@ -25,8 +25,8 @@ func (s *Service) SetupTodoRoutes(api fiber.Router) {
 	api.Use(middlewares.VerifyToken(s.userStore))
 
 	api.Post("/create", validator.ValidateSchema[types.CreateTodoPayload](*validator.CreateTodoSchema), s.CreateTodoHandler)
-	// api.Get("/:id", s.GetTodoHandler)
-	// api.Get("/all/:userId", s.GetTodosByUserIdHandler)
+	api.Get("/all", s.GetTodosByUserIdHandler)
+	api.Get("/:id", s.GetTodoHandler)
 	// api.Patch("/update/:id", s.UpdateTodoHandler)
 	// api.Delete("/delete/:id", s.DeleteTodoHandler)
 }
@@ -57,9 +57,41 @@ func (s *Service) CreateTodoHandler(ctx *fiber.Ctx) error {
 
 }
 
-// func (s *Service) GetTodoHandler(ctx *fiber.Ctx) error {}
+func (s *Service) GetTodoHandler(ctx *fiber.Ctx) error {
+	id, err := ctx.ParamsInt("id")
 
-// func (s *Service) GetTodosByUserIdHandler(ctx *fiber.Ctx) error {}
+	if err != nil {
+		return utils.SendErrorResponse(ctx, http.StatusBadRequest, "Todo ID is required")
+	}
+
+	todo, err := s.todoStore.GetTodoById(uint(id))
+
+	if err != nil {
+		return utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Internal Server Error")
+	}
+	if todo == nil {
+		return utils.SendErrorResponse(ctx, http.StatusNotFound, "No todo found")
+	}
+
+	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
+		"todo": *todo,
+	})
+}
+
+func (s *Service) GetTodosByUserIdHandler(ctx *fiber.Ctx) error {
+	// Get user data from Fiber context locals
+	user := utils.MapToStruct[models.User](ctx.Locals("user").(map[string]interface{}))
+
+	todos, err := s.todoStore.GetTodosByUserId(user.ID)
+	if err != nil {
+		return utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
+		"todos": todos,
+	})
+
+}
 
 // func (s *Service) UpdateTodoHandler(ctx *fiber.Ctx) error {}
 
