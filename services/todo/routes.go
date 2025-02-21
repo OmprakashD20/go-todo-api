@@ -27,7 +27,7 @@ func (s *Service) SetupTodoRoutes(api fiber.Router) {
 	api.Post("/create", validator.ValidateSchema[types.CreateTodoPayload](*validator.CreateTodoSchema), s.CreateTodoHandler)
 	api.Get("/all", s.GetTodosByUserIdHandler)
 	api.Get("/:id", s.GetTodoHandler)
-	// api.Patch("/update/:id", s.UpdateTodoHandler)
+	api.Put("/update/:id", validator.ValidateSchema[types.UpdateTodoPayload](*validator.UpdateTodoSchema), s.UpdateTodoHandler)
 	// api.Delete("/delete/:id", s.DeleteTodoHandler)
 }
 
@@ -93,6 +93,38 @@ func (s *Service) GetTodosByUserIdHandler(ctx *fiber.Ctx) error {
 
 }
 
-// func (s *Service) UpdateTodoHandler(ctx *fiber.Ctx) error {}
+func (s *Service) UpdateTodoHandler(ctx *fiber.Ctx) error {
+	id, err := ctx.ParamsInt("id")
+
+	if err != nil {
+		return utils.SendErrorResponse(ctx, http.StatusBadRequest, "Todo ID is required")
+	}
+
+	// Get validated todo data from Fiber context locals
+	updatedTodo := ctx.Locals("validatedData").(*types.UpdateTodoPayload)
+
+	// Check if todo exists
+	if todo, err := s.todoStore.GetTodoById(uint(id)); err != nil {
+		return utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Internal Server Error")
+	} else if todo == nil {
+		return utils.SendErrorResponse(ctx, http.StatusNotFound, "Todo not found")
+	}
+
+	data := models.Todo{
+		Title:       updatedTodo.Title,
+		Description: updatedTodo.Description,
+		Priority:    updatedTodo.Priority,
+		DueDate:     updatedTodo.DueDate,
+	}
+
+	err = s.todoStore.UpdateTodoById(uint(id), &data)
+	if err != nil {
+		return utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
+		"message": "Todo has been updated successfully",
+	})
+}
 
 // func (s *Service) DeleteTodoHandler(ctx *fiber.Ctx) error {}

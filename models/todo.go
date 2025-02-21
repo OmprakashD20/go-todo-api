@@ -14,7 +14,7 @@ type Todo struct {
 	DueDate     time.Time `json:"dueDate" gorm:"type:timestamptz;not null"`
 	IsCompleted bool      `json:"isCompleted" gorm:"default:false"`
 	UserID      uint      `json:"userId" gorm:"not null"`
-	User        User      `json:"-"`
+	// User        User      `json:"-"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }

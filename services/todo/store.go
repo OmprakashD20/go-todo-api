@@ -15,7 +15,7 @@ func NewStore(db *gorm.DB) *Store {
 }
 
 func (s *Store) CreateTodo(todo *models.Todo) error {
-	err := s.db.Table("todos").Create(todo).Error
+	err := s.db.Model(&models.Todo{}).Create(todo).Error
 
 	return err
 }
@@ -23,7 +23,7 @@ func (s *Store) CreateTodo(todo *models.Todo) error {
 func (s *Store) GetTodoById(id uint) (*models.Todo, error) {
 	todo := models.Todo{}
 
-	err := s.db.Table("todos").Where("id = ?", id).First(&todo).Error
+	err := s.db.Model(&models.Todo{}).Where("id = ?", id).First(&todo).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
@@ -35,7 +35,7 @@ func (s *Store) GetTodoById(id uint) (*models.Todo, error) {
 func (s *Store) GetTodosByUserId(userId uint) ([]*models.Todo, error) {
 	todos := []*models.Todo{}
 
-	err := s.db.Table("todos").Where("user_id = ?", userId).Order("due_date ASC").Find(&todos).Error
+	err := s.db.Model(&models.Todo{}).Where("user_id = ?", userId).Order("due_date ASC").Find(&todos).Error
 
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
@@ -44,6 +44,10 @@ func (s *Store) GetTodosByUserId(userId uint) ([]*models.Todo, error) {
 	return todos, err
 }
 
-// func (s *Store) UpdateTodoById(id uint, data *models.Todo) error {}
+func (s *Store) UpdateTodoById(id uint, data *models.Todo) error {
+	err := s.db.Model(&models.Todo{}).Where("id = ?", id).Updates(data).Error
+
+	return err
+}
 
 // func (s *Store) DeleteTodoById(id uint) error {}

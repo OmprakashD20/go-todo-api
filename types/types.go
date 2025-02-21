@@ -17,7 +17,7 @@ type TodoStore interface {
 	CreateTodo(todo *models.Todo) error
 	GetTodoById(id uint) (*models.Todo, error)
 	GetTodosByUserId(userId uint) ([]*models.Todo, error)
-	//UpdateTodoById(id uint, data *models.Todo) error
+	UpdateTodoById(id uint, data *models.Todo) error
 	//DeleteTodoById(id uint) error // Implement Batch Delete Option
 }
 
@@ -39,4 +39,12 @@ type CreateTodoPayload struct {
 	Description string    `json:"description"`
 	Priority    string    `json:"priority"`
 	DueDate     time.Time `json:"dueDate"`
+}
+
+type UpdateTodoPayload struct {
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Priority    string    `json:"priority"`
+	DueDate     time.Time `json:"dueDate"`
+	IsCompleted bool      `json:"isCompleted"`
 }
