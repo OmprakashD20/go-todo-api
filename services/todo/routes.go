@@ -28,7 +28,7 @@ func (s *Service) SetupTodoRoutes(api fiber.Router) {
 	api.Get("/all", s.GetTodosByUserIdHandler)
 	api.Get("/:id", s.GetTodoHandler)
 	api.Put("/update/:id", validator.ValidateSchema[types.UpdateTodoPayload](*validator.UpdateTodoSchema), s.UpdateTodoHandler)
-	// api.Delete("/delete/:id", s.DeleteTodoHandler)
+	api.Delete("/delete/:id", s.DeleteTodoHandler)
 }
 
 func (s *Service) CreateTodoHandler(ctx *fiber.Ctx) error {
@@ -127,4 +127,31 @@ func (s *Service) UpdateTodoHandler(ctx *fiber.Ctx) error {
 	})
 }
 
-// func (s *Service) DeleteTodoHandler(ctx *fiber.Ctx) error {}
+func (s *Service) DeleteTodoHandler(ctx *fiber.Ctx) error {
+	id, err := ctx.ParamsInt("id")
+
+	if err != nil {
+		return utils.SendErrorResponse(ctx, http.StatusBadRequest, "Todo ID is required")
+	}
+
+	// Get user data from Fiber context locals
+	user := utils.MapToStruct[models.User](ctx.Locals("user").(map[string]interface{}))
+
+	// Check if todo exists
+	if todo, err := s.todoStore.GetTodoById(uint(id)); err != nil {
+		return utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Internal Server Error")
+	} else if todo == nil {
+		return utils.SendErrorResponse(ctx, http.StatusNotFound, "Todo not found")
+	} else if todo.UserID != user.ID {
+		return utils.SendErrorResponse(ctx, http.StatusForbidden, "You are not authorized to delete this todo")
+	}
+
+	err = s.todoStore.DeleteTodoById(uint(id))
+	if err != nil {
+		return utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	return ctx.Status(http.StatusOK).JSON(&fiber.Map{
+		"message": "Todo has been deleted successfully",
+	})
+}

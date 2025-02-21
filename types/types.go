@@ -18,7 +18,7 @@ type TodoStore interface {
 	GetTodoById(id uint) (*models.Todo, error)
 	GetTodosByUserId(userId uint) ([]*models.Todo, error)
 	UpdateTodoById(id uint, data *models.Todo) error
-	//DeleteTodoById(id uint) error // Implement Batch Delete Option
+	DeleteTodoById(id uint) error
 }
 
 // Payloads

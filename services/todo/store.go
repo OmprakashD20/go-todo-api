@@ -50,4 +50,8 @@ func (s *Store) UpdateTodoById(id uint, data *models.Todo) error {
 	return err
 }
 
-// func (s *Store) DeleteTodoById(id uint) error {}
+func (s *Store) DeleteTodoById(id uint) error {
+	err := s.db.Where("id = ?", id).Delete(&models.Todo{}).Error
+
+	return err
+}
