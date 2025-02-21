@@ -22,11 +22,11 @@ func MapToArray(input map[string][]string) [][]string {
 	return result
 }
 
-func MapToStruct[T any](data map[string]interface{}) T {
+func MapToStruct[T any](data map[string]any) T {
 	var result T
 	v := reflect.ValueOf(&result).Elem()
 
-	for i := 0; i < v.NumField(); i++ {
+	for i := range v.NumField() {
 		field := v.Field(i)
 		fieldType := v.Type().Field(i)
 
@@ -42,12 +42,12 @@ func MapToStruct[T any](data map[string]interface{}) T {
 	return result
 }
 
-func StructToMap(data interface{}) map[string]interface{} {
+func StructToMap(data any) map[string]any {
 	v := reflect.ValueOf(data)
 
-	result := make(map[string]interface{})
+	result := make(map[string]any)
 	t := v.Type().Elem()
-	for i := 0; i < v.Elem().NumField(); i++ {
+	for i := range v.Elem().NumField() {
 		fieldValue := v.Elem().Field(i)
 		fieldName := t.Field(i).Name
 		if fieldValue.CanInterface() {
@@ -58,8 +58,8 @@ func StructToMap(data interface{}) map[string]interface{} {
 	return result
 }
 
-func Pick[T any](input T, pickFields ...string) map[string]interface{} {
-	result := make(map[string]interface{})
+func Pick[T any](input T, pickFields ...string) map[string]any {
+	result := make(map[string]any)
 	v := reflect.ValueOf(input)
 	t := reflect.TypeOf(input)
 
@@ -68,7 +68,7 @@ func Pick[T any](input T, pickFields ...string) map[string]interface{} {
 		pickMap[field] = true
 	}
 
-	for i := 0; i < v.NumField(); i++ {
+	for i := range v.NumField() {
 		fieldName := t.Field(i).Name
 		if pickMap[fieldName] {
 			result[fieldName] = v.Field(i).Interface()
@@ -78,8 +78,8 @@ func Pick[T any](input T, pickFields ...string) map[string]interface{} {
 	return result
 }
 
-func Omit[T any](input T, omitFields ...string) map[string]interface{} {
-	result := make(map[string]interface{})
+func Omit[T any](input T, omitFields ...string) map[string]any {
+	result := make(map[string]any)
 	v := reflect.ValueOf(input)
 	t := reflect.TypeOf(input)
 
@@ -88,7 +88,7 @@ func Omit[T any](input T, omitFields ...string) map[string]interface{} {
 		omitMap[field] = true
 	}
 
-	for i := 0; i < v.NumField(); i++ {
+	for i := range v.NumField() {
 		fieldName := t.Field(i).Name
 		if !omitMap[fieldName] {
 			result[fieldName] = v.Field(i).Interface()
