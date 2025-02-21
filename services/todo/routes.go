@@ -36,7 +36,7 @@ func (s *Service) CreateTodoHandler(ctx *fiber.Ctx) error {
 	todo := ctx.Locals("validatedData").(*types.CreateTodoPayload)
 
 	// Get user data from Fiber context locals
-	user := utils.MapToStruct[models.User](ctx.Locals("user").(map[string]interface{}))
+	user := utils.MapToStruct[models.User](ctx.Locals("user").(map[string]any))
 
 	data := models.Todo{
 		Title:       todo.Title,
@@ -80,7 +80,7 @@ func (s *Service) GetTodoHandler(ctx *fiber.Ctx) error {
 
 func (s *Service) GetTodosByUserIdHandler(ctx *fiber.Ctx) error {
 	// Get user data from Fiber context locals
-	user := utils.MapToStruct[models.User](ctx.Locals("user").(map[string]interface{}))
+	user := utils.MapToStruct[models.User](ctx.Locals("user").(map[string]any))
 
 	todos, err := s.todoStore.GetTodosByUserId(user.ID)
 	if err != nil {
@@ -135,7 +135,7 @@ func (s *Service) DeleteTodoHandler(ctx *fiber.Ctx) error {
 	}
 
 	// Get user data from Fiber context locals
-	user := utils.MapToStruct[models.User](ctx.Locals("user").(map[string]interface{}))
+	user := utils.MapToStruct[models.User](ctx.Locals("user").(map[string]any))
 
 	// Check if todo exists
 	if todo, err := s.todoStore.GetTodoById(uint(id)); err != nil {
