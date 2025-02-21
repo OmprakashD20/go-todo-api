@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// TODO: Ensure migration files are generated during the migration process in PRODUCTION
 func ConnectDB(config *config.DBConfig) (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",

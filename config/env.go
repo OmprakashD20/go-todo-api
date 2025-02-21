@@ -8,6 +8,7 @@ import (
 )
 
 type EnvConfig struct {
+	AppEnv        string
 	Port           string
 	DB             DBConfig
 	PasswordPepper string
@@ -31,7 +32,8 @@ func initConfig() EnvConfig {
 	}
 
 	return EnvConfig{
-		Port: *getEnv("PORT"),
+		AppEnv: *getEnv("APP_ENV"),
+		Port:   *getEnv("PORT"),
 		DB: DBConfig{
 			DBHost:     *getEnv("DB_HOST"),
 			DBPort:     *getEnv("DB_PORT"),
